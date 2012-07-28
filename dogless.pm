@@ -57,7 +57,7 @@ sub run_cmd {
         return "$post$s$pre";
     }
     elsif (/^~$/) {
-        return "$pre$s$post$total";
+        return "$pre$s$post$pre$s~$post";
     }
     elsif (/^!$/) {
         return '';
