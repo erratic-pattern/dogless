@@ -29,16 +29,16 @@ my $any_command;
 $any_command = qr/(?:<|>)(??{$any_command})|\$..|\\?.|$/s;
 
 sub run_cmd {
-    my ($_, $pre, $post, $s, $total) = @_;
+    my ($_, $pre, $post, $s) = @_;
     my ($x, $y, $c);
     if(($c) = /^<(.*)$/p) {
         $pre =~ /\||$/p;
-        $pre = run_cmd($c, ${^PREMATCH}, ${^POSTMATCH}, ${^MATCH}, $pre);
+        $pre = run_cmd($c, ${^PREMATCH}, ${^POSTMATCH}, ${^MATCH});
         return "$pre$s$post";
     }
     elsif (($c) = /^>(.*)$/p) {
         $post =~ /\||$/p;
-        $post = run_cmd($c, ${^PREMATCH}, ${^POSTMATCH}, ${^MATCH}, $post);
+        $post = run_cmd($c, ${^PREMATCH}, ${^POSTMATCH}, ${^MATCH});
         return "$pre$s$post";
     }
     elsif(($x, $y) = /^\$(.)(.)$/s) {
@@ -78,7 +78,7 @@ sub interpret {
     while (/\|($any_command)/p) {
         say if $debug_mode;
         sleep $interval if defined $interval;
-        $_ = run_cmd($1, ${^PREMATCH}, ${^POSTMATCH}, '|', $_);
+        $_ = run_cmd($1, ${^PREMATCH}, ${^POSTMATCH}, '|');
     }
     return $_;
 }
