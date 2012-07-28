@@ -26,7 +26,7 @@ __HELP__
 my ($help, $debug_mode, $interval);
 
 my $any_command;
-$any_command = qr/(<|>)(??{$any_command})|\\.|s..|.|$/;
+$any_command = qr/(?:<|>)(??{$any_command})|\\.|\$..|.|$/s;
 
 sub run_cmd {
     my ($_, $pre, $post, $s, $total) = @_;
@@ -41,28 +41,28 @@ sub run_cmd {
         $post = run_cmd($c, ${^PREMATCH}, ${^POSTMATCH}, ${^MATCH}, $post);
         return "$pre$s$post";
     }
-    elsif(($x, $y) = /^s(.)(.)$/sp) {
+    elsif(($x, $y) = /^\$(.)(.)$/s) {
         $_ = "$pre$s$post";
         s/\Q$x\E/$y/;
         return $_;
     }
-    elsif (/^"$/p) {
+    elsif (/^"$/) {
         $post =~ /^[^"]*("|$)/p;
         return "$pre$s${^POSTMATCH}";
     }
-    elsif (/^\?$/p) {
+    elsif (/^\?$/) {
         return reverse "$pre$s$post";
     }
     elsif (/^\^$/) {
         return "$post$s$pre";
     }
-    elsif (/^\~$/p) {
-        return "$pre$s$post" . $total;
+    elsif (/^~$/) {
+        return "$pre$s$post$total";
     }
     elsif (/^!$/) {
         return '';
     }
-    elsif (/^\|$/p) {
+    elsif (/^\|$/) {
         return "$pre$s$post";
     }
     elsif (($c) = /^\\?(.)$/sp){
@@ -75,10 +75,10 @@ sub run_cmd {
 
 sub interpret {
     my ($_) = @_;
-    while (/(\|)($any_command)/) {
+    while (/\|($any_command)/p) {
         say if $debug_mode;
         sleep $interval if defined $interval;
-        $_ = run_cmd($2, ${^PREMATCH}, ${^POSTMATCH}, '|', $_);
+        $_ = run_cmd($1, ${^PREMATCH}, ${^POSTMATCH}, '|', $_);
     }
     return $_;
 }
