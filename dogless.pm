@@ -26,7 +26,7 @@ __HELP__
 my ($help, $debug_mode, $interval);
 
 my $any_command;
-$any_command = qr/(?:<|>)(??{$any_command})|\\.|\$..|.|$/s;
+$any_command = qr/(?:<|>)(??{$any_command})|\$..|\\?.|$/s;
 
 sub run_cmd {
     my ($_, $pre, $post, $s, $total) = @_;
